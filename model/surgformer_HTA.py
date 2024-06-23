@@ -688,17 +688,3 @@ def surgformer_HTA(pretrained=False, pretrain_path=None, **kwargs):
             utils.load_state_dict(model, checkpoint)
 
     return model
-
-
-if __name__ == "__main__":
-    import utils
-    from datasets.args import get_args_finetuning
-    import os
-    os.environ['CUDA_VISIBLE_DEVICES'] = '1'
-
-    args = get_args_finetuning()[0]
-    model = surgformer_HTA(
-        pretrained=True,
-        # pretrain_path="/home/syangcw/SurgSSL/pretrain_params/timesformer_base_patch16_224_K400.pyth"
-        pretrain_path="/home/syangcw/Surgformer/pretrain_params/mae_pretrain_vit_base.pth"
-    )

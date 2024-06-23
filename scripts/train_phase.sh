@@ -1,11 +1,11 @@
-CUDA_VISIBLE_DEVICES=0,1,2 python -m torch.distributed.launch \
+CUDA_VISIBLE_DEVICES=2,3,4 python -m torch.distributed.launch \
 --nproc_per_node=3 \
 --master_port 12324 \
 downstream_phase/run_phase_training_val.py \
 --batch_size 8 \
 --epochs 50 \
 --save_ckpt_freq 10 \
---model  surgformer_base \
+--model  surgformer_HTA \
 --pretrained_path /home/syangcw/Surgformer/pretrain_params/mae_pretrain_vit_base.pth \
 --mixup 0.8 \
 --cutmix 1.0 \
