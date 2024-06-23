@@ -10,10 +10,9 @@ from torchvision import transforms
 from datasets.transforms.random_erasing import RandomErasing
 import warnings
 from torch.utils.data import Dataset
-
+import random
 import datasets.transforms.video_transforms as video_transforms
 import datasets.transforms.volume_transforms as volume_transforms
-
 
 def spatial_sampling(
     frames,
@@ -196,13 +195,11 @@ class PhaseDataset_Cholec80(Dataset):
         if self.mode == "train":
             args = self.args
             frames_info = self.dataset_samples[index]
-
             video_id, frame_id, frames = (
                 frames_info["video_id"],
                 frames_info["frame_id"],
                 frames_info["frames"],
             )
-
             if self.data_strategy == "online":
                 buffer, phase_labels, sampled_list = self._video_batch_loader(
                     frames, frame_id, video_id, index, True
@@ -215,35 +212,6 @@ class PhaseDataset_Cholec80(Dataset):
                 ) = self._video_batch_loader_for_key_frames(
                     frames, frame_id, video_id, index, True
                 )  # T H W C
-
-            # 跳过了所有具有重复帧的视频序列（集中在每个视频序列的初始位置）
-            # if len(sampled_list) != len(np.unique(sampled_list)):
-            #     while len(sampled_list) != len(np.unique(sampled_list)):
-            #         warnings.warn(
-            #             "Video {} Frame {} not correctly have enough unique frames".format(
-            #                 video_id, frame_id
-            #             )
-            #         )
-            #         index = np.random.randint(self.__len__())
-            #         sample = self.dataset_samples[index]
-
-            #         video_id, frame_id, frames = (
-            #             sample["video_id"],
-            #             sample["frame_id"],
-            #             sample["frames"],
-            #         )
-            #         if self.data_strategy == "online":
-            #             buffer, phase_labels, sampled_list = self._video_batch_loader(
-            #                 frames, frame_id, video_id, index, False
-            #             )  # T H W C
-            #         elif self.data_strategy == "offline":
-            #             (
-            #                 buffer,
-            #                 phase_labels,
-            #                 sampled_list,
-            #             ) = self._video_batch_loader_for_key_frames(
-            #                 frames, frame_id, video_id, index, False
-            #             )  # T H W C
 
             buffer = self._aug_frame(buffer, args)
 
@@ -432,6 +400,7 @@ class PhaseDataset_Cholec80(Dataset):
         #     img = cv2.cvtColor(np.asarray(buffer[k]), cv2.COLOR_RGB2BGR)
         #     cv2.imshow(str(k), img)
         #     cv2.waitKey()
+
         buffer = [transforms.ToTensor()(img) for img in buffer]
         buffer = torch.stack(buffer)  # T C H W
         buffer = buffer.permute(0, 2, 3, 1)  # T H W C
@@ -495,11 +464,8 @@ class PhaseDataset_Cholec80(Dataset):
                 img_path = os.path.join(
                     self.data_path,
                     "frames",
-                    self.mode,
                     line_info["video_id"],
-                    str(line_info["original_frame_id"]) + ".jpg"
-                    if "original_frame_id" in line_info
-                    else str(line_info["frame_id"]) + ".jpg",
+                    str(line_info["frame_id"]).zfill(5) + ".png",
                 )
                 # 当使用1fps采样时，line_info["frame_id"]类似于对应的序号，line_info["original_frame_id"]表示对应的图像序号
                 line_info["img_path"] = img_path
@@ -547,7 +513,7 @@ class PhaseDataset_Cholec80(Dataset):
                     "Error occured in reading frames {} from video {} of path {} (Unique_id: {}).".format(
                         frame_id_list[num],
                         video_id,
-                        self.frames[image_index]["img_path"],
+                        self.dataset_samples[image_index]["img_path"],
                         image_index,
                     )
                 )
@@ -663,7 +629,7 @@ def build_dataset(is_train, test_mode, fps, args):
             )
         else:
             mode = "val"
-            anno_path = os.path.join(args.data_path, "labels", mode, fps + "val.pickle")
+            anno_path = os.path.join(args.data_path, "labels", mode, fps + "val_test.pickle")
 
         dataset = PhaseDataset_Cholec80(
             anno_path=anno_path,
@@ -683,33 +649,6 @@ def build_dataset(is_train, test_mode, fps, args):
         )
         nb_classes = 7
     assert nb_classes == args.nb_classes
-    print("%s - %s : Number of the class = %d" % (mode, fps, args.nb_classes))
+    print("%s %s - %s : Number of the class = %d" % ("Cholec80", mode, fps, args.nb_classes))
 
     return dataset, nb_classes
-
-
-if __name__ == "__main__":
-    # PhaseDataset Demo
-    from datasets.args import get_args_finetuning
-    from torchvision import transforms
-    from datasets.transforms.transforms import *
-    from datasets.transforms.surg_transforms import *
-
-    args = get_args_finetuning()[0]
-    dataset, nb_class = build_dataset(
-        is_train=False, test_mode=False, fps="1fps", args=args
-    )
-    data_loader_train = torch.utils.data.DataLoader(dataset, batch_size=2)
-    for k in data_loader_train:
-        images, gt, names, flags = k
-        if flags[0]:
-            continue
-        else:
-            break
-        
-        # for k in range(images.shape[2]):
-        #     img = cv2.cvtColor(
-        #         np.asarray(images[0, :, k, :, :]).transpose(1, 2, 0), cv2.COLOR_RGB2BGR
-        #     )
-        #     cv2.imshow(str(k), img)
-        #     cv2.waitKey()

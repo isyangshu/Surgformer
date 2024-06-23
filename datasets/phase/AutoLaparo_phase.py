@@ -10,7 +10,7 @@ from torchvision import transforms
 from datasets.transforms.random_erasing import RandomErasing
 import warnings
 from torch.utils.data import Dataset
-
+import random
 import datasets.transforms.video_transforms as video_transforms
 import datasets.transforms.volume_transforms as volume_transforms
 
@@ -213,35 +213,6 @@ class PhaseDataset_AutoLaparo(Dataset):
                     frames, frame_id, video_id, index, False
                 )  # T H W C
 
-            # 跳过了所有具有重复帧的视频序列（集中在每个视频序列的初始位置）
-            # if len(sampled_list) != len(np.unique(sampled_list)):
-            #     while len(sampled_list) != len(np.unique(sampled_list)):
-            #         warnings.warn(
-            #             "Video {} Frame {} not correctly have enough unique frames".format(
-            #                 video_id, frame_id
-            #             )
-            #         )
-            #         index = np.random.randint(self.__len__())
-            #         sample = self.dataset_samples[index]
-
-            #         video_id, frame_id, frames = (
-            #             sample["video_id"],
-            #             sample["frame_id"],
-            #             sample["frames"],
-            #         )
-            #         if self.data_strategy == "online":
-            #             buffer, phase_labels, sampled_list = self._video_batch_loader(
-            #                 frames, frame_id, video_id, index, False
-            #             )  # T H W C
-            #         elif self.data_strategy == "offline":
-            #             (
-            #                 buffer,
-            #                 phase_labels,
-            #                 sampled_list,
-            #             ) = self._video_batch_loader_for_key_frames(
-            #                 frames, frame_id, video_id, index, False
-            #             )  # T H W C
-
             buffer = self._aug_frame(buffer, args)
 
             if self.output_mode == "key_frame":
@@ -266,6 +237,7 @@ class PhaseDataset_AutoLaparo(Dataset):
                     str(index) + "_" + video_id + "_" + str(frame_id),
                     {},
                 )
+
         elif self.mode == "val":
             frames_info = self.dataset_samples[index]
             video_id, frame_id, frames = (
@@ -681,25 +653,3 @@ def build_dataset(is_train, test_mode, fps, args):
     print("%s %s - %s : Number of the class = %d" % ("AutoLaparo", mode, fps, args.nb_classes))
 
     return dataset, nb_classes
-
-
-if __name__ == "__main__":
-    # PhaseDataset Demo
-    from datasets.args import get_args_finetuning
-    from torchvision import transforms
-    from datasets.transforms.surg_transforms import *
-
-    args = get_args_finetuning()[0]
-    dataset, nb_class = build_dataset(
-        is_train=False, test_mode=True, fps="1fps", args=args
-    )
-    data_loader_train = torch.utils.data.DataLoader(dataset, batch_size=2, shuffle=False)
-    for k in data_loader_train:
-        images, gt, names, flags = k
-        for k in range(images.shape[2]):
-            img = cv2.cvtColor(
-                np.asarray(images[0, :, k, :, :]).transpose(1, 2, 0), cv2.COLOR_RGB2BGR
-            )
-            cv2.imshow(str(k), img)
-            cv2.waitKey()
-        break

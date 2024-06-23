@@ -26,8 +26,8 @@ def main():
     unique_id_val = 0
     unique_id_test = 0
 
-    id2phase = {1: "Preparation", 2: "Dividing Ligament and Peritoneum", 3: "Dividing Uterine Vessels and Ligament", 
-                4: "Transecting the Vagina", 5: "Specimen Removal", 6: "Suturing", 7: "Washing"}
+    id2phase = {0: "Preparation", 1: "Dividing Ligament and Peritoneum", 2: "Dividing Uterine Vessels and Ligament", 
+                3: "Transecting the Vagina", 4: "Specimen Removal", 5: "Suturing", 6: "Washing"}
 
     for video_id in VIDEO_NAMES:
         vid_id = int(video_id)
@@ -60,7 +60,7 @@ def main():
             phase = phase_results[frame_id].strip().split()
             assert int(phase[0]) == frame_id + 1
             phase_id = int(phase[1])
-            info['phase_gt'] = phase_id - 1
+            info['phase_gt'] = phase_id
             info['phase_name'] = id2phase[int(phase[1])]
             info['fps'] = 1
             frame_infos.append(info)

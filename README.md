@@ -14,7 +14,7 @@
 
 ## NOTES
 
-**2024-06-23**: We release the full version of Surgformer.
+**2024-06-26**: We release the full version of Surgformer.
 
 **2024-05-14**: Our paper is early accepted for MICCAI 2024.
 
@@ -45,42 +45,36 @@ python datasets/data_preprosses/generate_labels_autolaparo.py
 # Cut black margin
 python datasets/data_preprosses/frame_cutmargin.py
 ```
-4. The data code related to AutoLaparo is an updated version, and we did not modify the earlier code used for Cholec80. So there are slight differences in the code architecture between Cholec80 and AutoLaparo. (We will adjust it in the future.)
 
 The final structure of datasets should be as following:
+
+Note that you can change `fps` in the Step.2 to generate more frames.
 ```bash
 data/
     └──Cholec80/
         └──frames/
-            └──train
-                └──video01
-                    ├──0.jpg
-                    ├──25.jpg
-                    └──...
-                ├──...    
-                └──video40
-            └──test
+            └──video01
+                ├──00000.png
+                ├──00001.png
+                └──...
+            ├──...    
+            └──video80
         └──frames_cutmargin/
         └──labels/
             └──train
                 ├── 1pstrain.pickle
-                ├── 5pstrain.pickle
                 └── ...
             └──test
                 ├── 1psval_test.pickle
-                ├── 5psval_test.pickle
                 └── ...
     └──AutoLaparo/
         └──frames/
-            └──train
-                └──01
-                    ├──00000.png
-                    ├──00001.png
-                    └──...
-                ├──...    
-                └──10
-            ├──val
-            └──test
+            └──01
+                ├──00000.png
+                ├──00001.png
+                └──...
+            ├──...    
+            └──21
         └──labels_pkl/
             └──train
             ├──val

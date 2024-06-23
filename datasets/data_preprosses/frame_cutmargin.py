@@ -71,33 +71,26 @@ def process_video(video_id, video_source, video_save):
 
 
 if __name__ == "__main__":
-    for split in ['train', 'test']:
-        source_path = "/home/yangshu/Surgformer/data/Cholec80/frames/" + split  # original path
-        save_path = "/home/yangshu/Surgformer/data/Cholec80/frames_cutmargin/" + split  # save path
+    source_path = "/home/yangshu/Surgformer/data/Cholec80/frames"  # original path
+    save_path = "/home/yangshu/Surgformer/data/Cholec80/frames_cutmargin"  # save path
 
-        create_directory_if_not_exists(save_path)
+    create_directory_if_not_exists(save_path)
 
-        processes = []
+    processes = []
 
-        for data_split in os.listdir(source_path):
-            if data_split == ".DS_Store":
-                continue
-            data_source = os.path.join(source_path, data_split)
-            data_save = os.path.join(save_path, data_split)
+    for video_id in tqdm(os.listdir(source_path)):
+        if video_id == ".DS_Store":
+            continue
+        video_source = os.path.join(source_path, video_id)
+        video_save = os.path.join(save_path, video_id)
 
-            for video_id in tqdm(os.listdir(data_source)):
-                if video_id == ".DS_Store":
-                    continue
-                video_source = os.path.join(data_source, video_id)
-                video_save = os.path.join(data_save, video_id)
+        process = multiprocessing.Process(
+            target=process_video, args=(video_id, video_source, video_save)
+        )
+        process.start()
+        processes.append(process)
 
-                process = multiprocessing.Process(
-                    target=process_video, args=(video_id, video_source, video_save)
-                )
-                process.start()
-                processes.append(process)
+    for process in processes:
+        process.join()
 
-        for process in processes:
-            process.join()
-
-        print("Cut Done")
+    print("Cut Done")

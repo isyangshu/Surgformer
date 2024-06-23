@@ -59,31 +59,32 @@ def main():
 
         frame_infos = list()
         frame_id_ = 0
-        for frame_id in tqdm(range(0, int(frames), 25)):
-            info = dict()
-            info['unique_id'] = unique_id
-            info['frame_id'] = frame_id_
-            info['original_frame_id'] = frame_id
-            info['video_id'] = video_id
+        for frame_id in tqdm(range(0, int(frames))):
+            if frame_id % fps == 0:
+                info = dict()
+                info['unique_id'] = unique_id
+                info['frame_id'] = frame_id % fps
+                assert frame_id % fps == frame_id_
+                info['video_id'] = video_id
 
-            if str(frame_id) in tool_dict:
-                info['tool_gt'] = tool_dict[str(frame_id)]
-            else:
-                info['tool_gt'] = None
+                if str(frame_id) in tool_dict:
+                    info['tool_gt'] = tool_dict[str(frame_id)]
+                else:
+                    info['tool_gt'] = None
 
-            phase = phase_results[frame_id].strip().split()
-            assert int(phase[0]) == frame_id
-            phase_id = phase2id[phase[1]]
-            info['phase_gt'] = phase_id
-            info['phase_name'] = phase[1]
-            info['fps'] = 1
-            info['original_frames'] = int(frames)
-            info['frames'] = int(frames) // 25
-            # info['tool_names'] = tool_name
-            info['phase_name'] = phase[1]
-            frame_infos.append(info)
-            unique_id += 1
-            frame_id_ += 1
+                phase = phase_results[frame_id].strip().split()
+                assert int(phase[0]) == frame_id
+                phase_id = phase2id[phase[1]]
+                info['phase_gt'] = phase_id
+                info['phase_name'] = phase[1]
+                info['fps'] = 1
+                info['original_frames'] = int(frames)
+                info['frames'] = int(frames) // fps
+                # info['tool_names'] = tool_name
+                info['phase_name'] = phase[1]
+                frame_infos.append(info)
+                unique_id += 1
+                frame_id_ += 1
         
         vid_id = int(video_name.replace('.mp4', '').replace("video", ""))
         if vid_id in TRAIN_NUMBERS:
