@@ -22,7 +22,7 @@ def build_dataset(is_train, test_mode, fps, args):
                 args.data_path, "labels", mode, fps + "val_test.pickle"
             )
         else:
-            mode = "val"
+            mode = "test"  # for validation
             anno_path = os.path.join(args.data_path, "labels", mode, fps + "val_test.pickle")
 
         dataset = PhaseDataset_Cholec80(

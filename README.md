@@ -39,6 +39,8 @@ python datasets/data_preprosses/extract_frames_autolaparo.py
 # Generate .pkl for training
 python datasets/data_preprosses/generate_labels_ch80.py
 python datasets/data_preprosses/generate_labels_autolaparo.py
+
+# Note that you can change the size of each frame to reduce I/O load.
 ```
 3. You can also use the cutting tool provided by [TMRNet](https://github.com/YuemingJin/TMRNet) to cut black margin for surgical videos in Cholec80, which may help to get better performance.
 ```python
