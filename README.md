@@ -1,7 +1,7 @@
 # [MICCAI 2024] Surgformer: Surgical Transformer with Hierarchical Temporal Attention for Surgical Phase Recognition
 
 
-<!-- [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT) -->
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 <!-- ![GitHub last commit](https://img.shields.io/github/last-commit/isyangshu/Surgformer?style=flat-square) -->
 <!-- ![GitHub issues](https://img.shields.io/github/issues/isyangshu/Surgformer?style=flat-square) -->
 <!-- ![GitHub stars](https://img.shields.io/github/stars/isyangshu/Surgformer?style=flat-square) -->
@@ -14,7 +14,7 @@
 
 ## NOTES
 
-**2024-06-23**: We released the full version of Surgformer.
+**2024-06-23**: We release the full version of Surgformer.
 
 **2024-05-14**: Our paper is early accepted for MICCAI 2024.
 
@@ -30,7 +30,7 @@
 ### Prepare your data
 1. Download raw video data from [Cholec80](https://camma.unistra.fr/datasets/) and [AutoLaparo](https://autolaparo.github.io/);
 > You need to fill the request form to access both datasets.
-2. Use the pre-processing tools provided by us to extract frames and generate files for training.
+2. Use the pre-processing tools provided by us to extract frames and generate pickle files for training.
 ```python
 # Extract frames form raw videos
 python datasets/data_preprosses/extract_frames_ch80.py
@@ -40,12 +40,12 @@ python datasets/data_preprosses/extract_frames_autolaparo.py
 python datasets/data_preprosses/generate_labels_ch80.py
 python datasets/data_preprosses/generate_labels_autolaparo.py
 ```
-3. You can also use the cutting tool provided by [TMRNet](https://github.com/YuemingJin/TMRNet) to cut black margin for surgical videos in Cholec80, which may get better performance.
+3. You can also use the cutting tool provided by [TMRNet](https://github.com/YuemingJin/TMRNet) to cut black margin for surgical videos in Cholec80, which may help to get better performance.
 ```python
 # Cut black margin
 python datasets/data_preprosses/frame_cutmargin.py
 ```
-4. The code related to AutoLaparo is an iterative version, and we did not modify the earlier code used for Cholec80. So there are slight differences in the code architecture between Cholec80 and AutoLaparo. (We will adjust it in the future.)
+4. The data code related to AutoLaparo is an updated version, and we did not modify the earlier code used for Cholec80. So there are slight differences in the code architecture between Cholec80 and AutoLaparo. (We will adjust it in the future.)
 
 The final structure of datasets should be as following:
 ```bash
@@ -88,8 +88,12 @@ data/
 ```
 ### Pretrained Parameters
 
+We use the parameters of [TimeSformer](https://github.com/facebookresearch/TimeSformer) trained on [K400 dataset](https://www.dropbox.com/s/g5t24we9gl5yk88/TimeSformer_divST_8x32_224_K400.pyth?dl=0) with frames 8 and spatial size 224 as initialization parameters.
+
+> You can try to use [ImageNet(MAE)](https://huggingface.co/timm/vit_base_patch16_224.mae), which may help to get better performance.
+
 ### Training
-We provide train script for training [train_phase.sh](https://github.com/isyangshu/Surgformer/blob/master/scripts/train_phase.sh).
+We provide the script for training [train_phase.sh](https://github.com/isyangshu/Surgformer/blob/master/scripts/train_phase.sh).
 
 run the following code for training
 
@@ -102,30 +106,34 @@ sh scripts/train.sh
 > **Model**: surgformer_base surgformer_HTA surgformer_HTA_KCA \
 > **Dataset**: Cholec80 AutoLaparo
 
-## Acknowledgements
-Huge thanks to the authors of following open-source projects:
-- [VideoMAE](https://github.com/MCG-NJU/VideoMAE/tree/main?tab=readme-ov-file)
-- [TMRNet](https://github.com/YuemingJin/TMRNet)
-- [SelfSupSurg](https://github.com/CAMMA-public/SelfSupSurg)
-
 ### Test
-Currently, the test and evaluation codes we provide are only applicable to two-GPU inference.
+> Currently, the test and evaluation codes we provide are only applicable to two-GPU inference.
 
-run the following code for testing:
+1. run the following code for testing, and get **0.txt** and **1.txt**;
 
 ```shell
 sh scripts/test.sh
 ```
 
+2. Merge the files and generate separate txt file for each video;
+```python
+python datasets/convert_results/convert_cholec80.py
+python datasets/convert_results/convert_autolaparo.py
+```
+
+3. Use [Matlab Evaluation Code](https://github.com/isyangshu/Surgformer/tree/master/evaluation_matlab) to compute metrics;
+
+## Acknowledgements
+Huge thanks to the authors of following open-source projects:
+- [VideoMAE](https://github.com/MCG-NJU/VideoMAE/tree/main?tab=readme-ov-file)
+- [TMRNet](https://github.com/YuemingJin/TMRNet)
+- [SelfSupSurg](https://github.com/CAMMA-public/SelfSupSurg)
+- [TimeSformer](https://github.com/facebookresearch/TimeSformer)
+
 ## License & Citation 
 If you find our work useful in your research, please consider citing our paper at:
 
 ```text
-@article{yang2024mambamil,
-  title={MambaMIL: Enhancing Long Sequence Modeling with Sequence Reordering in Computational Pathology},
-  author={Yang, Shu and Wang, Yihui and Chen, Hao},
-  journal={arXiv preprint arXiv:2403.06800},
-  year={2024}
-}
+coming soon
 ```
 This code is available for non-commercial academic purposes. If you have any question, feel free to email [Shu YANG](syangcw@connect.ust.hk).
