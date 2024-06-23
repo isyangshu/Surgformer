@@ -1,4 +1,4 @@
-CUDA_VISIBLE_DEVICES=2,3,4 python -m torch.distributed.launch \
+CUDA_VISIBLE_DEVICES=5,6,7 python -m torch.distributed.launch \
 --nproc_per_node=3 \
 --master_port 12324 \
 downstream_phase/run_phase_training.py \
