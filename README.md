@@ -139,5 +139,5 @@ If you find our work useful in your research, please consider citing our paper a
   year={2024}
 }
 ```
-This code is available for non-commercial academic purposes. If you have any question, feel free to email [Shu YANG](syangcw@connect.ust.hk) and [Yihui WANG](ywangrm@connect.ust.hk).
+This code is available for non-commercial academic purposes. If you have any question, feel free to email [Shu YANG](yangshu@connect.ust.hk) and [Yihui WANG](ywangrm@connect.ust.hk).
 # Surgformer

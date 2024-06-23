@@ -6,7 +6,7 @@ downstream_phase/run_phase_training_val.py \
 --epochs 50 \
 --save_ckpt_freq 10 \
 --model  surgformer_HTA \
---pretrained_path /home/syangcw/Surgformer/pretrain_params/mae_pretrain_vit_base.pth \
+--pretrained_path /home/yangshu/Surgformer/pretrain_params/mae_pretrain_vit_base.pth \
 --mixup 0.8 \
 --cutmix 1.0 \
 --smoothing 0.1 \
@@ -22,8 +22,8 @@ downstream_phase/run_phase_training_val.py \
 --sampling_rate 4 \
 --data_set AutoLaparo \
 --data_fps 1fps \
---output_dir /home/syangcw/Surgformer/results/AutoLaparo \
---log_dir /home/syangcw/Surgformer/results/AutoLaparo \
+--output_dir /home/yangshu/Surgformer/results/AutoLaparo \
+--log_dir /home/yangshu/Surgformer/results/AutoLaparo \
 --num_workers 10 \
 --dist_eval \
 --enable_deepspeed \

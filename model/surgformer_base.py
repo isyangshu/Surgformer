@@ -5,7 +5,7 @@ from functools import partial
 import torch.nn.functional as F
 import numpy as np
 import sys
-sys.path.append("/home/syangcw/Surgformer")
+sys.path.append("/home/yangshu/Surgformer")
 import utils
 from timm.models.layers import drop_path, to_2tuple, trunc_normal_
 from timm.models.registry import register_model
@@ -596,8 +596,8 @@ if __name__ == "__main__":
     args = get_args_finetuning()[0]
     model = surgformer_base(
         pretrained=True,
-        # pretrain_path="/home/syangcw/SurgSSL/pretrain_params/timesformer_base_patch16_224_K400.pyth"
-        pretrain_path="/home/syangcw/SurgSSL/pretrain_params/mae_pretrain_vit_base.pth"
+        # pretrain_path="/home/yangshu/SurgSSL/pretrain_params/timesformer_base_patch16_224_K400.pyth"
+        pretrain_path="/home/yangshu/SurgSSL/pretrain_params/mae_pretrain_vit_base.pth"
     ).cuda()
     x = torch.rand((2, 3, 16, 224, 224)).cuda()
     y = model(x)
