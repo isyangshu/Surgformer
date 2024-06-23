@@ -6,7 +6,7 @@ downstream_phase/run_phase_training.py \
 --epochs 50 \
 --save_ckpt_freq 10 \
 --model  surgformer_HTA \
---pretrained_path /home/yangshu/Surgformer/pretrain_params/timesformer_base_patch16_224_K400.pyth \
+--pretrained_path pretrain_params/timesformer_base_patch16_224_K400.pyth \
 --mixup 0.8 \
 --cutmix 1.0 \
 --smoothing 0.1 \

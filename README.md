@@ -1,11 +1,11 @@
-# Surgformer: Surgical Transformer with Hierarchical Temporal Attention for Surgical Phase Recognition
+# [MICCAI 2024] Surgformer: Surgical Transformer with Hierarchical Temporal Attention for Surgical Phase Recognition
 
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
-![GitHub last commit](https://img.shields.io/github/last-commit/isyangshu/Surgformer?style=flat-square)
-![GitHub issues](https://img.shields.io/github/issues/isyangshu/Surgformer?style=flat-square)
-![GitHub stars](https://img.shields.io/github/stars/isyangshu/Surgformer?style=flat-square)
-[![Arxiv Page](https://img.shields.io/badge/Arxiv-2403.06800-red?style=flat-square)](https://arxiv.org/pdf/2403.06800.pdf)
+<!-- [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT) -->
+<!-- ![GitHub last commit](https://img.shields.io/github/last-commit/isyangshu/Surgformer?style=flat-square) -->
+<!-- ![GitHub issues](https://img.shields.io/github/issues/isyangshu/Surgformer?style=flat-square) -->
+<!-- ![GitHub stars](https://img.shields.io/github/stars/isyangshu/Surgformer?style=flat-square) -->
+<!-- [![Arxiv Page](https://img.shields.io/badge/Arxiv-2403.06800-red?style=flat-square)](https://arxiv.org/pdf/2403.06800.pdf) -->
 
 
 ## Abstract
@@ -14,119 +14,108 @@
 
 ## NOTES
 
-**2024-04-30**: We released the full version of Surgformer.
+**2024-06-23**: We released the full version of Surgformer.
+
+**2024-05-14**: Our paper is early accepted for MICCAI 2024.
 
 ## Installation
-* Environment: CUDA 11.8 / Python 3.10
+* Environment: CUDA 11.4 / Python 3.8
+* Device: NVIDIA GeForce RTX 3090
 * Create a virtual environment
 ```shell
-> conda create -n Surgformer python=3.10 -y
-> conda activate Surgformer
+> conda env create -f Surgformer.yml
 ```
-* Install Pytorch 2.0.1
-```shell
-> pip install torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 --index-url https://download.pytorch.org/whl/cu118
-> pip install packaging
-```
-* Other requirements
-```shell
-> pip install timm==0.4.12
-> pip install deepspeed==0.14.0
-> pip install tensorboardx
-```
-For Hybird Model
-* Install causal-conv1d
-```shell
-> pip install causal-conv1d==1.1.1
-```
-* Install Mamba
-```shell
-> git clone git@github.com:isyangshu/Surgformer.git
-> cd mamba
-> pip install .
-```
-
-## Repository Details
-
-<!-- * `csv`:  Complete Cbioportal files, including the features path and data splits with 5-fold cross-validation. 
-* `datasets`: The code for Dataset, you can just replace the path in Line-25. -->
-* `mamba`: including the original Mamba, Bi-Mamba from Vim and our proposed SRMamba.
-* `models`: Support the following model:
-  - [Mean pooling](https://github.com/isyangshu/MambaMIL/tree/main/models/Mean_Max_MIL.py) 
-  - [Max pooling](https://github.com/isyangshu/MambaMIL/tree/main/models/Mean_Max_MIL.py) 
-  - [ABMIL](https://github.com/isyangshu/MambaMIL/tree/main/models/ABMIL.py)  
-  - [TransMIL](https://github.com/isyangshu/MambaMIL/tree/main/models/TransMIL.py)
-  - [S4MIL](https://github.com/isyangshu/MambaMIL/tree/main/models/S4MIL.py)
-  - [Our MambaMIL](https://github.com/isyangshu/MambaMIL/tree/main/models/MambaMIL.py)
-<!-- * `results`: the results on 12 datasets, including BLCA BRCA CESC CRC GBMLGG KIRC LIHC LUAD LUSC PAAD SARC UCEC. -->
-* `splits`: Splits for reproducation.
-* `train_scripts`: We provide train scripts for cancer subtyping and survival prediction.
 
 ## How to Train
 ### Prepare your data
-1. Download diagnostic WSIs from [TCGA](https://portal.gdc.cancer.gov/) and [BRACS](https://www.bracs.icar.cnr.it/) 
-2. Use the WSI processing tool provided by [CLAM](https://github.com/mahmoodlab/CLAM) to extract resnet-50 and [PLIP](https://github.com/PathologyFoundation/plip/tree/main) pretrained feature for each 512 $\times$ 512 patch (20x), which we then save as `.pt` files for each WSI. So, we get one `pt_files` folder storing `.pt` files for all WSIs of one study.
+1. Download raw video data from [Cholec80](https://camma.unistra.fr/datasets/) and [AutoLaparo](https://autolaparo.github.io/);
+> You need to fill the request form to access both datasets.
+2. Use the pre-processing tools provided by us to extract frames and generate files for training.
+```python
+# Extract frames form raw videos
+python datasets/data_preprosses/extract_frames_ch80.py
+python datasets/data_preprosses/extract_frames_autolaparo.py
+
+# Generate .pkl for training
+python datasets/data_preprosses/generate_labels_ch80.py
+python datasets/data_preprosses/generate_labels_autolaparo.py
+```
+3. You can also use the cutting tool provided by [TMRNet](https://github.com/YuemingJin/TMRNet) to cut black margin for surgical videos in Cholec80, which may get better performance.
+```python
+# Cut black margin
+python datasets/data_preprosses/frame_cutmargin.py
+```
+4. The code related to AutoLaparo is an iterative version, and we did not modify the earlier code used for Cholec80. So there are slight differences in the code architecture between Cholec80 and AutoLaparo. (We will adjust it in the future.)
 
 The final structure of datasets should be as following:
 ```bash
-DATA_ROOT_DIR/
-    └──pt_files/
-        └──resnet50/
-            ├── slide_1.pt
-            ├── slide_2.pt
-            └── ...
-        └──plip/
-            ├── slide_1.pt
-            ├── slide_2.pt
-            └── ...
-        └──others/
-            ├── slide_1.pt
-            ├── slide_2.pt
-            └── ...
+data/
+    └──Cholec80/
+        └──frames/
+            └──train
+                └──video01
+                    ├──0.jpg
+                    ├──25.jpg
+                    └──...
+                ├──...    
+                └──video40
+            └──test
+        └──frames_cutmargin/
+        └──labels/
+            └──train
+                ├── 1pstrain.pickle
+                ├── 5pstrain.pickle
+                └── ...
+            └──test
+                ├── 1psval_test.pickle
+                ├── 5psval_test.pickle
+                └── ...
+    └──AutoLaparo/
+        └──frames/
+            └──train
+                └──01
+                    ├──00000.png
+                    ├──00001.png
+                    └──...
+                ├──...    
+                └──10
+            ├──val
+            └──test
+        └──labels_pkl/
+            └──train
+            ├──val
+            └──test
 ```
-### Survival Prediction
-We provide train scripts for survival prediction [ALL_512_surivial_k_fold.sh](https://github.com/isyangshu/MambaMIL/tree/main/train_scripts/ALL_512_survival_k_fold.sh).
+### Pretrained Parameters
 
-Below are the supported models and datasets:
-
-```bash
-model_names='max_mil mean_mil att_mil trans_mil s4_mil mamba_mil'
-backbones="resnet50 plip"
-cancers='BLCA BRCA COADREAD KIRC KIRP LUAD STAD UCEC'
-```
+### Training
+We provide train script for training [train_phase.sh](https://github.com/isyangshu/Surgformer/blob/master/scripts/train_phase.sh).
 
 run the following code for training
 
 ```shell
-sh ./train_scripts/ALL_512_surivial_k_fold.sh
+sh scripts/train.sh
 ```
+> You need to modify **data_path**, **eval_data_path**, **output_dir** and **log_dir** according to your own setting.
 
-### Cancer Subtyping
-We provide train scripts for TCGA NSCLC cancer subtyping [LUAD_LUSC_512_subtyping.sh](https://github.com/isyangshu/MambaMIL/tree/main/train_scripts/LUAD_LUSC_512_subtyping.sh) and BReAst Carcinoma Subtyping [BRACS.sh](https://github.com/isyangshu/MambaMIL/tree/main/train_scripts/train_scripts/BRACS.sh).
-
-Below are the supported models:
-
-```bash
-model_names='max_mil mean_mil att_mil trans_mil s4_mil mamba_mil'
-backbones="resnet50 plip"
-```
-
-run the following code for training TCGA NSCLC cancer subtyping 
-
-```shell
-sh ./train_scripts/LUAD_LUSC_512_subtyping.sh
-```
-run the following code for training BReAst Carcinoma Subtyping 
-
-```shell
-sh ./train_scripts/BRACS.sh
-```
+> Optional settings \
+> **Model**: surgformer_base surgformer_HTA surgformer_HTA_KCA \
+> **Dataset**: Cholec80 AutoLaparo
 
 ## Acknowledgements
 Huge thanks to the authors of following open-source projects:
-- [CLAM](https://github.com/mahmoodlab/CLAM)
+- [VideoMAE](https://github.com/MCG-NJU/VideoMAE/tree/main?tab=readme-ov-file)
+- [TMRNet](https://github.com/YuemingJin/TMRNet)
+- [SelfSupSurg](https://github.com/CAMMA-public/SelfSupSurg)
 
+### Test
+Currently, the test and evaluation codes we provide are only applicable to two-GPU inference.
 
+run the following code for testing:
+
+```shell
+sh scripts/test.sh
+```
 
 ## License & Citation 
 If you find our work useful in your research, please consider citing our paper at:
@@ -139,5 +128,4 @@ If you find our work useful in your research, please consider citing our paper a
   year={2024}
 }
 ```
-This code is available for non-commercial academic purposes. If you have any question, feel free to email [Shu YANG](yangshu@connect.ust.hk) and [Yihui WANG](ywangrm@connect.ust.hk).
-# Surgformer
+This code is available for non-commercial academic purposes. If you have any question, feel free to email [Shu YANG](syangcw@connect.ust.hk).
