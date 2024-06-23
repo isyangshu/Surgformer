@@ -1,12 +1,12 @@
 CUDA_VISIBLE_DEVICES=2,3,4 python -m torch.distributed.launch \
 --nproc_per_node=3 \
 --master_port 12324 \
-downstream_phase/run_phase_training_val.py \
+downstream_phase/run_phase_training.py \
 --batch_size 8 \
 --epochs 50 \
 --save_ckpt_freq 10 \
 --model  surgformer_HTA \
---pretrained_path /home/yangshu/Surgformer/pretrain_params/mae_pretrain_vit_base.pth \
+--pretrained_path /home/yangshu/Surgformer/pretrain_params/timesformer_base_patch16_224_K400.pyth \
 --mixup 0.8 \
 --cutmix 1.0 \
 --smoothing 0.1 \

@@ -4,7 +4,6 @@ from datasets.transforms.surg_transforms import *
 
 from datasets.phase.Cholec80_phase import PhaseDataset_Cholec80
 from datasets.phase.AutoLaparo_phase import PhaseDataset_AutoLaparo
-from datasets.phase.Cataract101_phase import PhaseDataset_Cataract101
 
 def build_dataset(is_train, test_mode, fps, args):
     """Load video phase recognition dataset."""
@@ -24,7 +23,7 @@ def build_dataset(is_train, test_mode, fps, args):
             )
         else:
             mode = "val"
-            anno_path = os.path.join(args.data_path, "labels", mode, fps + "val.pickle")
+            anno_path = os.path.join(args.data_path, "labels", mode, fps + "val_test.pickle")
 
         dataset = PhaseDataset_Cholec80(
             anno_path=anno_path,
@@ -80,40 +79,6 @@ def build_dataset(is_train, test_mode, fps, args):
             args=args,
         )
         nb_classes = 7
-    elif args.data_set == "Cataract101":
-        mode = None
-        anno_path = None
-        if is_train is True:
-            mode = "train"
-            anno_path = os.path.join(
-                args.data_path, "labels_pkl", mode, fps + "train.pickle"
-            )
-        elif test_mode is True:
-            mode = "test"
-            anno_path = os.path.join(
-                args.data_path, "labels_pkl", mode, fps + "test.pickle"
-            )
-        else:
-            mode = "val"
-            anno_path = os.path.join(args.data_path, "labels_pkl", mode, fps + "val.pickle")
-
-        dataset = PhaseDataset_Cataract101(
-            anno_path=anno_path,
-            data_path=args.data_path,
-            mode=mode,
-            data_strategy=args.data_strategy,
-            output_mode=args.output_mode,
-            cut_black=args.cut_black,
-            clip_len=args.num_frames,
-            frame_sample_rate=args.sampling_rate,
-            keep_aspect_ratio=True,
-            crop_size=args.input_size,
-            short_side_size=args.short_side_size,
-            new_height=256,
-            new_width=320,
-            args=args,
-        )
-        nb_classes = 10
     else:
         print("Error")
 

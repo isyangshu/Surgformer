@@ -37,7 +37,6 @@ import utils
 from model.surgformer_base import surgformer_base
 from model.surgformer_HTA import surgformer_HTA
 from model.surgformer_HTA_KCA import surgformer_HTA_KCA
-from model.surgformer_HTA_Mamba import surgformer_HTA_Mamba
 
 
 def get_args():
@@ -152,11 +151,11 @@ def get_args():
     parser.add_argument(
         "--lr",
         type=float,
-        default=3e-4,
+        default=5e-4,
         metavar="LR",
         help="learning rate (default: 5e-4/1e-3)",
     )
-    parser.add_argument("--layer_decay", type=float, default=0.1)
+    parser.add_argument("--layer_decay", type=float, default=0.75)
 
     parser.add_argument(
         "--warmup_lr",
@@ -288,13 +287,13 @@ def get_args():
     # Dataset parameters
     parser.add_argument(
         "--data_path",
-        default="/home/yangshu/data/cholec80",
+        default="/home/yangshu/Surgformer/data/AutoLaparo",
         type=str,
         help="dataset path",
     )
     parser.add_argument(
         "--eval_data_path",
-        default="/home/yangshu/data/cholec80",
+        default="/home/yangshu/Surgformer/data/AutoLaparo",
         type=str,
         help="dataset path for evaluation",
     )
@@ -318,8 +317,8 @@ def get_args():
     )  # 0表示指数级间隔，-1表示随机间隔设置, -2表示递增间隔
     parser.add_argument(
         "--data_set",
-        default="Cholec80",
-        choices=["Cholec80", "AutoLaparo", "Cataract101"],
+        default="AutoLaparo",
+        choices=["Cholec80", "AutoLaparo"],
         type=str,
         help="dataset",
     )
@@ -332,12 +331,12 @@ def get_args():
     )
     parser.add_argument(
         "--output_dir",
-        default="/home/yangshu/Surgformer/results",
+        default="/home/yangshu/Surgformer/results/AutoLaparo",
         help="path where to save, empty for no saving",
     )
     parser.add_argument(
         "--log_dir",
-        default="/home/yangshu/Surgform/results",
+        default="/home/yangshu/Surgform/results/AutoLaparo",
         help="path where to tensorboard log",
     )
     parser.add_argument(
@@ -378,12 +377,7 @@ def get_args():
     parser.add_argument(
         "--world_size", default=1, type=int, help="number of distributed processes"
     )
-    parser.add_argument("--local-rank", default=-1, type=int)
-    parser.add_argument("--dist_on_itp", action="store_true")
-    parser.add_argument(
-        "--dist_url", default="env://", help="url used to set up distributed training"
-    )
-
+    parser.add_argument("--local_rank", default=-1, type=int)
     parser.add_argument("--enable_deepspeed", action="store_true", default=False)
 
     known_args, _ = parser.parse_known_args()
@@ -869,9 +863,9 @@ def main(args, ds_init):
                     model_ema=None,
                 )
         if data_loader_val is not None:
-            test_stats = validation_one_epoch(data_loader_test, model, device)
+            test_stats = validation_one_epoch(data_loader_val, model, device)
             print(
-                f"Accuracy of the network on the {len(dataset_test)} val videos: {test_stats['acc1']:.1f}%"
+                f"Accuracy of the network on the {len(dataset_val)} val videos: {test_stats['acc1']:.1f}%"
             )
             if max_accuracy < test_stats["acc1"]:
                 max_accuracy = test_stats["acc1"]

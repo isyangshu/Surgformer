@@ -5,7 +5,7 @@ import pickle
 from tqdm import tqdm
 
 def main():
-    ROOT_DIR = "/Users/yangshu/Downloads/AutoLaparo/"
+    ROOT_DIR = "/home/yangshu/Surgformer/data/AutoLaparo"
     VIDEO_NAMES = os.listdir(os.path.join(ROOT_DIR, 'frames'))
     VIDEO_NAMES = sorted([x for x in VIDEO_NAMES if "DS" not in x])
 
@@ -101,22 +101,4 @@ def main():
     print('TEST Frams', TEST_FRAME_NUMBERS, unique_id_test) 
 
 if __name__ == '__main__':
-    # main()
-
-    # 读取pkl文件,rb是读取二进制文件，而r是读取文本文件
-
-    file = open('/Users/yangshu/Downloads/AutoLaparo/labels_pkl/train/1fpstrain.pickle', 'rb')
-    info = pickle.load(file)
-    total_num = 0
-    for index in info.keys():
-        num = len(info[index])
-        info_final = info[index][-1]
-        if info_final['frame_id'] != info_final['frames']:
-            print(info_final)
-            print('!!!!!!!!!!!!!!!!!')
-        total_num += num
-    print(total_num)
-    print(len(info['10']))
-    print(info['10'][0])
-    print(info['10'][-2])
-    print(info['10'][-1])
+    main()

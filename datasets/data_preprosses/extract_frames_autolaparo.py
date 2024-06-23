@@ -3,7 +3,7 @@ import os
 import cv2
 from tqdm import tqdm
 
-ROOT_DIR = "xxxxxx/AutoLaparo"
+ROOT_DIR = "/home/yangshu/Surgformer/data/AutoLaparo"
 VIDEO_NAMES = os.listdir(os.path.join(ROOT_DIR, "videos"))
 VIDEO_NAMES = sorted([x for x in VIDEO_NAMES if 'mp4' in x])
 
