@@ -1,0 +1,17 @@
+mamba
+.history
+pretrain_params
+Cholec80
+CholecT50
+data
+Experience
+results
+model/__pycache__
+downstream_phase/__pycache__
+__pycache__
+datasets/__pycache__
+datasets/phase/__pycache__
+datasets/transforms/__pycache__
+*.slurm
+*.out
+*.err

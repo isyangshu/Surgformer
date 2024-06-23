@@ -1,0 +1,29 @@
+CUDA_VISIBLE_DEVICES=2,3 python -m torch.distributed.launch \
+--nproc_per_node=2 \
+--master_port 12324 \
+downstream_triplet/run_triplet_training.py \
+--batch_size 16 \
+--epochs 50 \
+--save_ckpt_freq 10 \
+--model  surgformer_HTA_KCA \
+--pretrained_path /home/syangcw/Surgformer/pretrain_params/timesformer_base_patch16_224_K400.pyth \
+--lr 5e-4 \
+--layer_decay 0.75 \
+--warmup_epochs 5 \
+--data_path /home/syangcw/datasets/CholecT50 \
+--eval_data_path /home/syangcw/datasets/CholecT50 \
+--eval \
+--finetune /home/syangcw/Surgformer/CholecT50/CholecTriplet/surgformer_HTA_KCA_CholecT50C_0.0005_0.75_online_key_frame_frame16_Fixed_Stride_4/checkpoint-best/mp_rank_00_model_states.pt \
+--nb_classes 100 \
+--data_strategy online \
+--output_mode key_frame \
+--num_frames 16 \
+--sampling_rate 4 \
+--data_set CholecT50C \
+--data_fps 1fps \
+--output_dir /home/syangcw/Surgformer/CholecT50/CholecTriplet/ \
+--log_dir /home/syangcw/Surgformer/CholecT50/CholecTriplet/ \
+--num_workers 10 \
+--dist_eval \
+--enable_deepspeed \
+--no_auto_resume
