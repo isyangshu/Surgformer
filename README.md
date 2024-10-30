@@ -14,6 +14,8 @@
 
 ## NOTES
 
+**2024-10-01**: Without any adjustment and surgical parameters, we win the 2nd in OSS challenge and 3rd in PhaKIR.
+
 **2024-06-26**: We release the full version of Surgformer.
 
 **2024-05-14**: Our paper is early accepted for MICCAI 2024.
