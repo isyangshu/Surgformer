@@ -63,8 +63,8 @@ def main():
             if frame_id % fps == 0:
                 info = dict()
                 info['unique_id'] = unique_id
-                info['frame_id'] = frame_id % fps
-                assert frame_id % fps == frame_id_
+                info['frame_id'] = frame_id // fps
+                assert frame_id // fps == frame_id_
                 info['video_id'] = video_id
 
                 if str(frame_id) in tool_dict:
